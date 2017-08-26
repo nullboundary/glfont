@@ -66,6 +66,12 @@ func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, 
 			gBnd = ttf.Bounds(fixed.Int26_6(scale))
 			gw = int32((gBnd.Max.X - gBnd.Min.X) >> 6)
 			gh = int32((gBnd.Max.Y - gBnd.Min.Y) >> 6)
+
+			//above can sometimes yield 0 for font smaller than 48pt, 1 is minimum
+			if gw == 0 || gh == 0 {
+				gw = 1
+				gh = 1
+			}
 		}
 
 		//The glyph's ascent and descent equal -bounds.Min.Y and +bounds.Max.Y.
