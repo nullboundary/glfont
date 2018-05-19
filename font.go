@@ -66,6 +66,13 @@ func (f *Font) SetColor(red float32, green float32, blue float32, alpha float32)
 	f.color.a = alpha
 }
 
+func (f *Font) UpdateResolution(windowWidth int, windowHeight int) {
+	gl.UseProgram(f.program)
+	resUniform := gl.GetUniformLocation(f.program, gl.Str("resolution\x00"))
+	gl.Uniform2f(resUniform, float32(windowWidth), float32(windowHeight))
+	gl.UseProgram(0)
+}
+
 //Printf draws a string to the screen, takes a list of arguments like printf
 func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{}) error {
 
