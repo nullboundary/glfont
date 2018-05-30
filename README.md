@@ -36,6 +36,14 @@ Printf draws a string to the screen, takes a list of arguments like printf
 func (f *Font) SetColor(red float32, green float32, blue float32, alpha float32)
 ```
 SetColor allows you to set the text color to be used when you draw the text
+
+#### func (f *Font) UpdateResolution
+
+```go
+func (f *Font) UpdateResolution(windowWidth int, windowHeight int)
+```
+UpdateResolution is needed when the viewport is resized
+
 ***
 
 # Example:
@@ -106,3 +114,7 @@ func main() {
 	}
 }
 ```
+
+#### Contributors
+
+* [kivutar](https://github.com/kivutar)
