@@ -44,6 +44,13 @@ func (f *Font) UpdateResolution(windowWidth int, windowHeight int)
 ```
 UpdateResolution is needed when the viewport is resized
 
+#### func (f *Font) Width
+
+```go
+func (f *Font) Width(scale float32, fs string, argv ...interface{}) float32
+```
+Width returns the width of a piece of text in pixels
+
 ***
 
 # Example:
