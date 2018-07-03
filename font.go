@@ -161,3 +161,39 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 
 	return nil
 }
+
+//Width returns the width of a piece of text in pixels
+func (f *Font) Width(scale float32, fs string, argv ...interface{}) float32 {
+
+	var width float32
+
+	indices := []rune(fmt.Sprintf(fs, argv...))
+
+	if len(indices) == 0 {
+		return 0
+	}
+
+	lowChar := rune(32)
+
+	// Iterate through all characters in string
+	for i := range indices {
+
+		//get rune
+		runeIndex := indices[i]
+
+		//skip runes that are not in font chacter range
+		if int(runeIndex)-int(lowChar) > len(f.fontChar) || runeIndex < lowChar {
+			fmt.Printf("%c %d\n", runeIndex, runeIndex)
+			continue
+		}
+
+		//find rune in fontChar list
+		ch := f.fontChar[runeIndex-lowChar]
+
+		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		width += float32((ch.advance >> 6)) * scale // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+
+	}
+
+	return width
+}
