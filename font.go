@@ -145,7 +145,7 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		//BufferSubData(target Enum, offset int, data []byte)
 		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(vertices)*4, gl.Ptr(vertices)) // Be sure to use glBufferSubData and not glBufferData
 		// Render quad
-		gl.DrawArrays(gl.TRIANGLES, 0, 24)
+		gl.DrawArrays(gl.TRIANGLES, 0, 16)
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
