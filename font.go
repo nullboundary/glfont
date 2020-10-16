@@ -119,23 +119,15 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		ypos := y - float32(ch.height-ch.bearingV)*scale
 		w := float32(ch.width) * scale
 		h := float32(ch.height) * scale
+		vertices := []float32{
+			xpos + w, yPos, 1.0, 0.0,
+			xpos, ypos, 0.0, 0.0,
+			xpos, ypos + h, 0.0, 1.0,
 
-		//set quad positions
-		var x1 = xpos
-		var x2 = xpos + w
-		var y1 = ypos
-		var y2 = ypos + h
-
-		//setup quad array
-		var vertices = []float32{
-			//  X, Y, Z, U, V
-			// Front
-			x1, y1, 0.0, 0.0,
-			x2, y1, 1.0, 0.0,
-			x1, y2, 0.0, 1.0,
-			x1, y2, 0.0, 1.0,
-			x2, y1, 1.0, 0.0,
-			x2, y2, 1.0, 1.0}
+			xpos, ypos + h, 0.0, 1.0,
+			xpos + w, ypos + h, 1.0, 1.0,
+			xpos + w, ypos, 1.0, 0.0,
+		}
 
 		// Render glyph texture over quad
 		gl.BindTexture(gl.TEXTURE_2D, ch.textureID)
