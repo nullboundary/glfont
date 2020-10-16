@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-gl/gl/all-core/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 // Direction represents the direction in which strings should be rendered.
@@ -120,7 +120,7 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		w := float32(ch.width) * scale
 		h := float32(ch.height) * scale
 		vertices := []float32{
-			xpos + w, yPos, 1.0, 0.0,
+			xpos + w, ypos, 1.0, 0.0,
 			xpos, ypos, 0.0, 0.0,
 			xpos, ypos + h, 0.0, 1.0,
 
@@ -137,7 +137,7 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		//BufferSubData(target Enum, offset int, data []byte)
 		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(vertices)*4, gl.Ptr(vertices)) // Be sure to use glBufferSubData and not glBufferData
 		// Render quad
-		gl.DrawArrays(gl.TRIANGLES, 0, 16)
+		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)

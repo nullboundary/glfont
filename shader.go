@@ -1,7 +1,7 @@
 package glfont
 
 import (
-	"github.com/go-gl/gl/all-core/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"fmt"
 	"strings"
@@ -67,7 +67,7 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
-var fragmentFontShader = `#version 150 core
+var fragmentFontShader = `#version 410 core
 in vec2 fragTexCoord;
 out vec4 outputColor;
 
@@ -80,7 +80,7 @@ void main()
     outputColor = textColor * sampled;
 }` + "\x00"
 
-var vertexFontShader = `#version 150 core
+var vertexFontShader = `#version 410 core
 
 //vertex position
 in vec2 vert;

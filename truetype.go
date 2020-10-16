@@ -2,7 +2,8 @@ package glfont
 
 import (
 	"fmt"
-	"github.com/go-gl/gl/all-core/gl"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
