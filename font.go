@@ -120,7 +120,7 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		w := float32(ch.width) * scale
 		h := float32(ch.height) * scale
 		vertices := []float32{
-			xpos + w, yPos, 1.0, 0.0,
+			xpos + w, ypos, 1.0, 0.0,
 			xpos, ypos, 0.0, 0.0,
 			xpos, ypos + h, 0.0, 1.0,
 
