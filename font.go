@@ -189,3 +189,14 @@ func (f *Font) Width(scale float32, fs string, argv ...interface{}) float32 {
 
 	return width
 }
+
+// Height - returns the height of a piece of text in pixels
+func (f *Font) Height() int {
+	var height int
+	for _, ch := range f.fontChar {
+		if ch.height > height {
+			height = ch.height
+		}
+	}
+	return height
+}
