@@ -13,6 +13,18 @@ import (
 	"io/ioutil"
 )
 
+// A Font allows rendering of text to an OpenGL context.
+type Font struct {
+	fontChar map[rune]*character
+	ttf      *truetype.Font
+	scale    int32
+	vao      uint32
+	vbo      uint32
+	program  uint32
+	texture  uint32 // Holds the glyph texture id.
+	color    color
+}
+
 type character struct {
 	textureID uint32 // ID handle of the glyph texture
 	width     int    //glyph width
@@ -23,17 +35,17 @@ type character struct {
 }
 
 //GenerateGlyphs builds a set of textures based on a ttf files gylphs
-func GenerateGlyphs(f *Font, ttf *truetype.Font, scale int32, low, high rune) error {
+func (f *Font) GenerateGlyphs(low, high rune) error {
 	//create a freetype context for drawing
 	c := freetype.NewContext()
 	c.SetDPI(72)
-	c.SetFont(ttf)
-	c.SetFontSize(float64(scale))
+	c.SetFont(f.ttf)
+	c.SetFontSize(float64(f.scale))
 	c.SetHinting(font.HintingFull)
 
 	//create new face to measure glyph dimensions
-	ttfFace := truetype.NewFace(ttf, &truetype.Options{
-		Size:    float64(scale),
+	ttfFace := truetype.NewFace(f.ttf, &truetype.Options{
+		Size:    float64(f.scale),
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
@@ -52,7 +64,7 @@ func GenerateGlyphs(f *Font, ttf *truetype.Font, scale int32, low, high rune) er
 
 		//if gylph has no dimensions set to a max value
 		if gw == 0 || gh == 0 {
-			gBnd = ttf.Bounds(fixed.Int26_6(scale))
+			gBnd = f.ttf.Bounds(fixed.Int26_6(f.scale))
 			gw = int32((gBnd.Max.X - gBnd.Min.X) >> 6)
 			gh = int32((gBnd.Max.Y - gBnd.Min.Y) >> 6)
 
@@ -131,10 +143,12 @@ func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, 
 	//make Font stuct type
 	f := new(Font)
 	f.fontChar = make(map[rune]*character)
+	f.ttf = ttf
+	f.scale = scale
 	f.program = program            //set shader program
 	f.SetColor(1.0, 1.0, 1.0, 1.0) //set default white
 
-	err = GenerateGlyphs(f, ttf, scale, low, high)
+	err = f.GenerateGlyphs(low, high)
 	if err != nil {
 		return nil, err
 	}

@@ -14,14 +14,22 @@
 ```go
 func LoadFont(file string, scale int32, windowWidth int, windowHeight int) (*Font, error)
 ```
-LoadFont loads the specified font at the given scale.
+LoadFont loads the specified font at the given scale. The default character set
+is ASCII (codepoints 32 to 127).
 
 #### func  LoadTrueTypeFont
 
 ```go
 func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error)
 ```
-LoadTrueTypeFont builds a set of textures based on a ttf files gylphs
+LoadTrueTypeFont builds buffers and textures based on a ttf files gylphs.
+
+#### func (*Font) GenerateGlyphs
+
+```go
+func (f *Font) GenerateGlyphs(low, high rune) error
+```
+GenerateGlyphs builds additional glyphs for non-ASCII Unicode codepoints.
 
 #### func (*Font) Printf
 

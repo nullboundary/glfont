@@ -17,16 +17,6 @@ const (
 	TopToBottom                  // E.g.: Chinese
 )
 
-// A Font allows rendering of text to an OpenGL context.
-type Font struct {
-	fontChar map[rune]*character
-	vao      uint32
-	vbo      uint32
-	program  uint32
-	texture  uint32 // Holds the glyph texture id.
-	color    color
-}
-
 type color struct {
 	r float32
 	g float32
