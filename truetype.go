@@ -108,7 +108,7 @@ func GenerateGlyphs(f *Font, ttf *truetype.Font, scale int32, low, high rune) er
 		char.textureID = texture
 
 		//add char to fontChar list
-		f.fontChar = append(f.fontChar, char)
+		f.fontChar[ch] = char
 	}
 
 	gl.BindTexture(gl.TEXTURE_2D, 0)
@@ -130,7 +130,7 @@ func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, 
 
 	//make Font stuct type
 	f := new(Font)
-	f.fontChar = make([]*character, 0, high-low+1)
+	f.fontChar = make(map[rune]*character)
 	f.program = program            //set shader program
 	f.SetColor(1.0, 1.0, 1.0, 1.0) //set default white
 

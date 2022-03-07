@@ -19,7 +19,7 @@ const (
 
 // A Font allows rendering of text to an OpenGL context.
 type Font struct {
-	fontChar []*character
+	fontChar map[rune]*character
 	vao      uint32
 	vbo      uint32
 	program  uint32
@@ -82,8 +82,6 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		return nil
 	}
 
-	lowChar := rune(32)
-
 	//setup blending mode
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
@@ -105,14 +103,14 @@ func (f *Font) Printf(x, y float32, scale float32, fs string, argv ...interface{
 		//get rune
 		runeIndex := indices[i]
 
+		//find rune in fontChar list
+		ch, ok := f.fontChar[runeIndex]
+
 		//skip runes that are not in font chacter range
-		if int(runeIndex)-int(lowChar) > len(f.fontChar) || runeIndex < lowChar {
+		if !ok {
 			fmt.Printf("%c %d\n", runeIndex, runeIndex)
 			continue
 		}
-
-		//find rune in fontChar list
-		ch := f.fontChar[runeIndex-lowChar]
 
 		//calculate position and size for current rune
 		xpos := x + float32(ch.bearingH)*scale
@@ -165,22 +163,20 @@ func (f *Font) Width(scale float32, fs string, argv ...interface{}) float32 {
 		return 0
 	}
 
-	lowChar := rune(32)
-
 	// Iterate through all characters in string
 	for i := range indices {
 
 		//get rune
 		runeIndex := indices[i]
 
+		//find rune in fontChar list
+		ch, ok := f.fontChar[runeIndex]
+
 		//skip runes that are not in font chacter range
-		if int(runeIndex)-int(lowChar) > len(f.fontChar) || runeIndex < lowChar {
+		if !ok {
 			fmt.Printf("%c %d\n", runeIndex, runeIndex)
 			continue
 		}
-
-		//find rune in fontChar list
-		ch := f.fontChar[runeIndex-lowChar]
 
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
 		width += float32((ch.advance >> 6)) * scale // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
