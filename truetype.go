@@ -13,6 +13,18 @@ import (
 	"io/ioutil"
 )
 
+// A Font allows rendering of text to an OpenGL context.
+type Font struct {
+	fontChar map[rune]*character
+	ttf      *truetype.Font
+	scale    int32
+	vao      uint32
+	vbo      uint32
+	program  uint32
+	texture  uint32 // Holds the glyph texture id.
+	color    color
+}
+
 type character struct {
 	textureID uint32 // ID handle of the glyph texture
 	width     int    //glyph width
@@ -22,48 +34,37 @@ type character struct {
 	bearingV  int    //glyph bearing vertical
 }
 
-//LoadTrueTypeFont builds a set of textures based on a ttf files gylphs
-func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error) {
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
+//GenerateGlyphs builds a set of textures based on a ttf files gylphs
+func (f *Font) GenerateGlyphs(low, high rune) error {
+	//create a freetype context for drawing
+	c := freetype.NewContext()
+	c.SetDPI(72)
+	c.SetFont(f.ttf)
+	c.SetFontSize(float64(f.scale))
+	c.SetHinting(font.HintingFull)
 
-	// Read the truetype font.
-	ttf, err := truetype.Parse(data)
-	if err != nil {
-		return nil, err
-	}
-
-	//make Font stuct type
-	f := new(Font)
-	f.fontChar = make([]*character, 0, high-low+1)
-	f.program = program            //set shader program
-	f.SetColor(1.0, 1.0, 1.0, 1.0) //set default white
+	//create new face to measure glyph dimensions
+	ttfFace := truetype.NewFace(f.ttf, &truetype.Options{
+		Size:    float64(f.scale),
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
 
 	//make each gylph
 	for ch := low; ch <= high; ch++ {
-
 		char := new(character)
-
-		//create new face to measure glyph diamensions
-		ttfFace := truetype.NewFace(ttf, &truetype.Options{
-			Size:    float64(scale),
-			DPI:     72,
-			Hinting: font.HintingFull,
-		})
 
 		gBnd, gAdv, ok := ttfFace.GlyphBounds(ch)
 		if ok != true {
-			return nil, fmt.Errorf("ttf face glyphBounds error")
+			return fmt.Errorf("ttf face glyphBounds error")
 		}
 
 		gh := int32((gBnd.Max.Y - gBnd.Min.Y) >> 6)
 		gw := int32((gBnd.Max.X - gBnd.Min.X) >> 6)
 
-		//if gylph has no diamensions set to a max value
+		//if gylph has no dimensions set to a max value
 		if gw == 0 || gh == 0 {
-			gBnd = ttf.Bounds(fixed.Int26_6(scale))
+			gBnd = f.ttf.Bounds(fixed.Int26_6(f.scale))
 			gw = int32((gBnd.Max.X - gBnd.Min.X) >> 6)
 			gh = int32((gBnd.Max.Y - gBnd.Min.Y) >> 6)
 
@@ -91,25 +92,18 @@ func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, 
 		rgba := image.NewRGBA(rect)
 		draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 
-		//create a freetype context for drawing
-		c := freetype.NewContext()
-		c.SetDPI(72)
-		c.SetFont(ttf)
-		c.SetFontSize(float64(scale))
-		c.SetClip(rgba.Bounds())
-		c.SetDst(rgba)
-		c.SetSrc(fg)
-		c.SetHinting(font.HintingFull)
-
 		//set the glyph dot
 		px := 0 - (int(gBnd.Min.X) >> 6)
 		py := (gAscent)
 		pt := freetype.Pt(px, py)
 
 		// Draw the text from mask to image
-		_, err = c.DrawString(string(ch), pt)
+		c.SetClip(rgba.Bounds())
+		c.SetDst(rgba)
+		c.SetSrc(fg)
+		_, err := c.DrawString(string(ch), pt)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		// Generate texture
@@ -126,11 +120,38 @@ func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, 
 		char.textureID = texture
 
 		//add char to fontChar list
-		f.fontChar = append(f.fontChar, char)
-
+		f.fontChar[ch] = char
 	}
 
 	gl.BindTexture(gl.TEXTURE_2D, 0)
+	return nil
+}
+
+//LoadTrueTypeFont builds OpenGL buffers and glyph textures based on a ttf file
+func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error) {
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	// Read the truetype font.
+	ttf, err := truetype.Parse(data)
+	if err != nil {
+		return nil, err
+	}
+
+	//make Font stuct type
+	f := new(Font)
+	f.fontChar = make(map[rune]*character)
+	f.ttf = ttf
+	f.scale = scale
+	f.program = program            //set shader program
+	f.SetColor(1.0, 1.0, 1.0, 1.0) //set default white
+
+	err = f.GenerateGlyphs(low, high)
+	if err != nil {
+		return nil, err
+	}
 
 	// Configure VAO/VBO for texture quads
 	gl.GenVertexArrays(1, &f.vao)
