@@ -133,3 +133,4 @@ func main() {
 #### Contributors
 
 * [kivutar](https://github.com/kivutar)
+* [samhocevar](https://github.com/samhocevar)
