@@ -20,7 +20,7 @@ is ASCII (codepoints 32 to 127).
 #### func  LoadTrueTypeFont
 
 ```go
-func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error)
+func LoadFontBytes(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error)
 ```
 LoadTrueTypeFont builds buffers and textures based on a ttf files gylphs.
 
