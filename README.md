@@ -20,16 +20,16 @@ is ASCII (codepoints 32 to 127).
 #### func  LoadTrueTypeFont
 
 ```go
-func LoadFontBytes(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error)
+func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune, dir Direction) (*Font, error)
 ```
 LoadTrueTypeFont builds buffers and textures based on a ttf files gylphs.
 
-#### func  LoadFontFromBytes
+#### func  LoadFontBytes
 
 ```go
 func LoadFontBytes(buf []byte, scale int32, windowWidth int, windowHeight int) (*Font, error) {
 ```
-LoadFont loads font directly from bytes (such as `goregulat.TTF`, https://pkg.go.dev/golang.org/x/image/font/gofont/goregular ) at the given scale. The default character set
+LoadFontBytes loads font directly from bytes (such as `goregulat.TTF`, https://pkg.go.dev/golang.org/x/image/font/gofont/goregular ) at the given scale. The default character set
 is ASCII (codepoints 32 to 127).
 
 #### func (*Font) GenerateGlyphs
