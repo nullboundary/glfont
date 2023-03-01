@@ -142,3 +142,4 @@ func main() {
 
 * [kivutar](https://github.com/kivutar)
 * [samhocevar](https://github.com/samhocevar)
+* [bobiverse](https://github.com/bobiverse)
